@@ -47,15 +47,32 @@ public class UserService {
     }
 
     /**
+     * Get user by email.
+     * Throws ResponseStatusException (HTTP Status) if the user is not found.
+     * @param email user email
+     * @return UserDto
+     */
+    public UserDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with email: " + email));
+
+        return mapToDto(user);
+    }
+
+    /**
      * Register new user. First, check if email is already in use.
+     * Throws ResponseStatusException (HTTP Status) if user already exists.
      * @param dto UserRegisterDto
      * @return UserDto
      */
     public UserDto register(UserRegisterDto dto) {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new ResponseStatusException
-                    (HttpStatus.NOT_FOUND, "User not found with id: " + dto.getEmail());        }
 
+        // check if email is already in use
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use: " + dto.getEmail());
+        }
+
+        // create new user
         User user = new User();
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
@@ -75,9 +92,12 @@ public class UserService {
      * @return UserDto
      */
     public UserDto updateUser(Integer id, UserDto dto) {
+
+        // check if a user exists
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
+        // update user
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
@@ -90,6 +110,7 @@ public class UserService {
 
     /**
      * Delete a user by id. First check if the user exists. Then delete it.
+     * Throws ResponseStatusException (HTTP Status) if the user is not found.
      * @param id user id
      */
     public void deleteUser(Integer id) {
