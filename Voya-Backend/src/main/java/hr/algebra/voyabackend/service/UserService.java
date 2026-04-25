@@ -2,13 +2,11 @@ package hr.algebra.voyabackend.service;
 
 import hr.algebra.voyabackend.exception.UserNotFoundException;
 import hr.algebra.voyabackend.model.User;
-import hr.algebra.voyabackend.model.dto.AuthApiResponseDto;
-import hr.algebra.voyabackend.model.dto.UserDto;
-import hr.algebra.voyabackend.model.dto.UserLoginDto;
-import hr.algebra.voyabackend.model.dto.UserRegisterDto;
+import hr.algebra.voyabackend.model.dto.*;
 import hr.algebra.voyabackend.model.enums.Role;
 import hr.algebra.voyabackend.repository.UserRepository;
 import hr.algebra.voyabackend.security.JwtUtilities;
+import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -29,7 +28,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
-
 
     /**
      * Registers the user as a NEW CLIENT.
@@ -59,17 +57,6 @@ public class UserService {
         return buildApiResponse(token, savedUser);
     }
 
-    private AuthApiResponseDto buildApiResponse(String token, User savedUser) {
-        return new AuthApiResponseDto(
-                token,
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getFirstName(),
-                savedUser.getLastName(),
-                savedUser.getRole().name()
-        );
-    }
-
     /**
      * Registers the user as a NEW DRIVER.
      * First, check if the user already exists. If not, create a new user.
@@ -90,6 +77,34 @@ public class UserService {
         user.setPhone(dto.getPhone());
         user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         user.setRole(Role.DRIVER);
+        user.setStatus(true);
+
+        User savedUser = userRepository.save(user);
+        String token = jwtService.generateToken(savedUser);
+
+        return buildApiResponse(token, savedUser);
+    }
+
+    /**
+     * Registers the user as a NEW ADMIN. This method must be ADMIN LEVEL ONLY in Controller.
+     * First, check if the user already exists. If not, create a new user.
+     * Throws ResponseStatusException (HTTP Status) if the user already exists.
+     * @param dto UserRegisterDto
+     * @return AuthApiResponseDto - JWT token and User information
+     */
+    public AuthApiResponseDto registerAsAdmin(UserRegisterDto dto) {
+        // check if email is already in use
+        if (userIsAlreadyRegistered(dto)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use: " + dto.getEmail());
+        }
+        // create new user
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setPhone(dto.getPhone());
+        user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(Role.ADMIN);
         user.setStatus(true);
 
         User savedUser = userRepository.save(user);
@@ -125,7 +140,7 @@ public class UserService {
         return userRepository.findAll()
                 .stream()
                 .map(this::mapToDto)
-                .collect(Collectors.toList());
+                .toList(); // returns unmodifiable list
     }
 
     /**
@@ -176,6 +191,23 @@ public class UserService {
     }
 
     /**
+     * Update user password. First, check if the user exists. Then update the password.
+     * @param id user id
+     * @param dto UpdatePasswordDto object containing the old and new password
+     */
+    public void updatePassword(Integer id, UpdatePasswordDto dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid current password");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    /**
      * Delete a user by id. First check if the user exists. Then delete it.
      * Throws ResponseStatusException (HTTP Status) if the user is not found.
      * @param id user id
@@ -187,16 +219,25 @@ public class UserService {
     }
 
     /**
-     * Update user password. First check if the user exists. Then update the password.
-     * @param email user email
-     * @param newPassword new password
+     * Deactivate a user. First, check if the user exists. Then deactivate it.
+     * @param id user id
      */
-    public void updatePassword(String email, String newPassword) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        user.setPasswordHash(passwordEncoder.encode(newPassword));
+    public void deactivateUser(Integer id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        user.setStatus(false);
         userRepository.save(user);
     }
+
+    /**
+     * Activate a user. First, check if the user exists. Then activate it.
+     * @param id user id
+     */
+    public void activateUser(Integer id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        user.setStatus(true);
+        userRepository.save(user);
+    }
+
 
     // MAPPER
     private UserDto mapToDto(User user) {
@@ -214,4 +255,22 @@ public class UserService {
     private boolean userIsAlreadyRegistered(UserRegisterDto dto) {
         return userRepository.findByEmail(dto.getEmail()).isPresent();
     }
+
+    /**
+     * Builds the response the controller will return to frontend
+     * @param token JWT token generated by the JwtUtilities class
+     * @param savedUser User object saved in the database
+     * @return AuthApiResponseDto object containing the token, user id, email, first name, last name, and role
+     */
+    private AuthApiResponseDto buildApiResponse(String token, User savedUser) {
+        return new AuthApiResponseDto(
+                token,
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getFirstName(),
+                savedUser.getLastName(),
+                savedUser.getRole().name()
+        );
+    }
+
 }
