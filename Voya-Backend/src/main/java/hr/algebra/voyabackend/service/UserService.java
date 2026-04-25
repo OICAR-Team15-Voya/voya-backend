@@ -2,6 +2,7 @@ package hr.algebra.voyabackend.service;
 
 import hr.algebra.voyabackend.exception.UserNotFoundException;
 import hr.algebra.voyabackend.model.User;
+import hr.algebra.voyabackend.model.dto.AuthApiResponseDto;
 import hr.algebra.voyabackend.model.dto.UserDto;
 import hr.algebra.voyabackend.model.dto.UserLoginDto;
 import hr.algebra.voyabackend.model.dto.UserRegisterDto;
@@ -35,9 +36,9 @@ public class UserService {
      * First, check if the user already exists. If not, create a new user.
      * Throws ResponseStatusException (HTTP Status) if the user already exists.
      * @param dto UserRegisterDto
-     * @return JWT token for immediate login
+     * @return AuthApiResponseDto - JWT token and User information
      */
-    public String registerAsClient(UserRegisterDto dto) {
+    public AuthApiResponseDto registerAsClient(UserRegisterDto dto) {
         // check if email is already in use
         if (userIsAlreadyRegistered(dto)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use: " + dto.getEmail());
@@ -53,7 +54,20 @@ public class UserService {
         user.setStatus(true);
 
         User savedUser = userRepository.save(user);
-        return jwtService.generateToken(savedUser);
+        String token = jwtService.generateToken(savedUser);
+
+        return buildApiResponse(token, savedUser);
+    }
+
+    private AuthApiResponseDto buildApiResponse(String token, User savedUser) {
+        return new AuthApiResponseDto(
+                token,
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getFirstName(),
+                savedUser.getLastName(),
+                savedUser.getRole().name()
+        );
     }
 
     /**
@@ -61,9 +75,9 @@ public class UserService {
      * First, check if the user already exists. If not, create a new user.
      * Throws ResponseStatusException (HTTP Status) if the user already exists.
      * @param dto UserRegisterDto
-     * @return JWT token for immediate login
+     * @return AuthApiResponseDto - JWT token and User information
      */
-    public String registerAsDriver(UserRegisterDto dto) {
+    public AuthApiResponseDto registerAsDriver(UserRegisterDto dto) {
         // check if email is already in use
         if (userIsAlreadyRegistered(dto)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use: " + dto.getEmail());
@@ -79,16 +93,18 @@ public class UserService {
         user.setStatus(true);
 
         User savedUser = userRepository.save(user);
-        return jwtService.generateToken(savedUser);
+        String token = jwtService.generateToken(savedUser);
+
+        return buildApiResponse(token, savedUser);
     }
 
     /**
      * Login user. First check if user exists. Then check if the password is correct.
      * Throws ResponseStatusException (HTTP Status) if the user is not found or the password is incorrect.
      * @param dto UserLoginDto
-     * @return JWT token
+     * @return AuthApiResponseDto - JWT token and User information
      */
-    public String login(UserLoginDto dto) {
+    public AuthApiResponseDto login(UserLoginDto dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
@@ -96,7 +112,9 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
-        return jwtService.generateToken(user);
+        String token = jwtService.generateToken(user);
+
+        return buildApiResponse(token, user);
     }
 
     /**
