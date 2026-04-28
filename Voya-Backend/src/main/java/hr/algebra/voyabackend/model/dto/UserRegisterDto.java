@@ -2,7 +2,7 @@ package hr.algebra.voyabackend.model.dto;
 
 import lombok.Data;
 
-// class for registering new user
+// class for registering a new user
 @Data
 public class UserRegisterDto {
     private String email;

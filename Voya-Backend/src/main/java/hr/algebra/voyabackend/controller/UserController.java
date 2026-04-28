@@ -4,9 +4,9 @@ import hr.algebra.voyabackend.model.dto.UpdatePasswordDto;
 import hr.algebra.voyabackend.model.dto.UserDto;
 import hr.algebra.voyabackend.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * Returns all users from the database.ž
+     * Returns all users from the database.
      * URL is: /voya/api/users/all
      * @return List<UserDto>
      */
@@ -47,7 +47,7 @@ public class UserController {
      * @return UserDto with updated information
      */
     @PutMapping("/{id}/profile")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Integer id, @RequestBody UserDto dto) {
+    public ResponseEntity<UserDto> updateUserProfile(@PathVariable Integer id, @RequestBody UserDto dto) {
         return ResponseEntity.ok (userService.updateUser(id, dto));
     }
 
@@ -58,7 +58,7 @@ public class UserController {
      * @return response message whether the user was deleted or not
      */
     @PutMapping("/{id}/password")
-    public ResponseEntity<String> updatePassword(@PathVariable Integer id, @RequestBody UpdatePasswordDto passwordDto) {
+    public ResponseEntity<String> updateUserPassword(@PathVariable Integer id, @RequestBody UpdatePasswordDto passwordDto) {
         userService.updatePassword(id, passwordDto);
         return ResponseEntity.ok("Password updated");
     }
@@ -97,4 +97,18 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted");
     }
+
+    /**
+     * Deletes user profile and scrambles all user data.
+     * @param id user id
+     * @return response message whether the user was deleted or not
+     */
+    @DeleteMapping("/forget-me/{id}")
+    public ResponseEntity<String> deleteAndForget(@PathVariable Integer id, @AuthenticationPrincipal UserDetails currentUser) {
+
+        userService.deleteAndForget(id, currentUser.getUsername());
+        return ResponseEntity.ok("User data scrambled and user profile deactivated");
+    }
+
+
 }

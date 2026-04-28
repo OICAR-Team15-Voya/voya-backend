@@ -6,15 +6,14 @@ import hr.algebra.voyabackend.model.dto.*;
 import hr.algebra.voyabackend.model.enums.Role;
 import hr.algebra.voyabackend.repository.UserRepository;
 import hr.algebra.voyabackend.security.JwtUtilities;
-import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -273,4 +272,26 @@ public class UserService {
         );
     }
 
+    /**
+     * Deletes a user from the database in a way that rewrites user data with the "deleted-" prefix.
+     *
+     * @param id user id
+     * @param currentUserEmail
+     */
+    public void deleteAndForget(Integer id, String currentUserEmail) {
+
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        if (!currentUserEmail.equals(user.getEmail())) {
+            throw new AccessDeniedException("You can only delete your own account");
+        }
+
+        user.setFirstName("deleted first name");
+        user.setLastName("deleted second name");
+        user.setEmail("deleted_" + id + "@email.com");
+        user.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
+        user.setPhone("deleted phone number");
+        user.setStatus(false);
+
+        userRepository.save(user);
+    }
 }
