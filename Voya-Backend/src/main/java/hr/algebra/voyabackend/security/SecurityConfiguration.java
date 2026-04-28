@@ -35,6 +35,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/voya/api/auth/**").permitAll()
                         .requestMatchers("/voya/api/users/**").permitAll()
+                        .requestMatchers("/voya/api/drivers/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
