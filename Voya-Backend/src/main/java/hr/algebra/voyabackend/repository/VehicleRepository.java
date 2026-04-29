@@ -1,7 +1,10 @@
 package hr.algebra.voyabackend.repository;
 
 import hr.algebra.voyabackend.model.Vehicle;
+import io.micrometer.common.KeyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 
@@ -13,4 +16,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 //    existsById(id) — check exists
 //    count() — total records
 
+    //    Custom methods:
+    boolean existsByRegistration(String registration);
+    List<Vehicle> findAllByActiveTrue();
 }
