@@ -21,6 +21,7 @@ public class DriverController {
 
     /**
      * Returns all drivers from the database.
+     * URL is: /voya/api/drivers/all
      * @return List<DriverDto> 200 if OK
      */
     @GetMapping("/all")
@@ -30,6 +31,7 @@ public class DriverController {
 
     /**
      * Returns driver by id.
+     * URL is: /voya/api/drivers/{id}
      * @param id driver id
      * @return DriverDto 200 if OK
      */
@@ -40,6 +42,7 @@ public class DriverController {
 
     /**
      * Creates a new driver and user.
+     * URL is: /voya/api/drivers
      * @param dto DriverCreateDto
      * @return DriverDto 201 if Created
      */
@@ -50,6 +53,8 @@ public class DriverController {
 
     /**
      * Updates driver profile.
+     * Cascade updates user profile.
+     * URL is: /voya/api/drivers/{id}
      * @param id driver id
      * @param dto DriverProfileUpdateDto
      * @return DriverDto 200 if OK
@@ -62,6 +67,7 @@ public class DriverController {
     /**
      * Deletes driver profile.
      * Cascade deletes user profile.
+     * URL is: /voya/api/drivers/{id}
      * @param id driver id
      * @return 200 if OK
      */

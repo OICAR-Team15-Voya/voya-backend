@@ -12,4 +12,7 @@ public interface VehicleCategoryRepository extends JpaRepository<VehicleCategory
 //    deleteById(id) — delete
 //    existsById(id) — check exists
 //    count() — total records
+
+    //    Custom methods:
+    boolean existsByName(String name);
 }

@@ -33,6 +33,10 @@ public class Vehicle {
     @Column(nullable = false, length = 50)
     private String registration;
 
+    @Column(nullable = false)
+    private Boolean active = true;
+
     @OneToMany(mappedBy = "vehicle")
     private List<Reservation> reservations;
+
 }
