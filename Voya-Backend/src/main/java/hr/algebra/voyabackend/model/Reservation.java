@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -59,7 +60,10 @@ public class Reservation {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
-    @OneToOne(mappedBy = "reservation")
-    private Payment payment;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
+
+    @Column(name = "is_paid", nullable = false)
+    private Boolean isPaid = false;
 
 }
