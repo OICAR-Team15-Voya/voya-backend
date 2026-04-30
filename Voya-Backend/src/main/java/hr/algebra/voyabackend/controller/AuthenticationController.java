@@ -33,19 +33,19 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-
-    /**
-     * Registers a new user as a driver
-     * Call this endpoint if you want to register a driver.
-     * URL is: /voya/api/auth/driverRegister
-     * @param dto UserRegisterDto (email, password, firstName, lastName, phone)
-     * @return AuthApiResponseDto -> JSON with JWT token and user information
-     */
-    @PostMapping("/driverRegister")
-    public ResponseEntity<AuthApiResponseDto> driverRegister(@RequestBody UserRegisterDto dto) {
-        AuthApiResponseDto response = userService.registerAsDriver(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+//  DEPRECATED METHOD, DO NOT USE
+//    /**
+//     * Registers a new user as a driver
+//     * Call this endpoint if you want to register a driver.
+//     * URL is: /voya/api/auth/driverRegister
+//     * @param dto UserRegisterDto (email, password, firstName, lastName, phone)
+//     * @return AuthApiResponseDto -> JSON with JWT token and user information
+//     */
+//    @PostMapping("/driverRegister")
+//    public ResponseEntity<AuthApiResponseDto> driverRegister(@RequestBody UserRegisterDto dto) {
+//        AuthApiResponseDto response = userService.registerAsDriver(dto);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+//    }
 
     /**
      * Registers a new user as an admin

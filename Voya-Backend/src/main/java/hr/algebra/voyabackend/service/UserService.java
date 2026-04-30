@@ -126,6 +126,11 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
+        // only drivers and admins should log in
+        if (user.getRole() == Role.CLIENT) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "For client access, please use the mobile app.");
+        }
+
         String token = jwtService.generateToken(user);
 
         return buildApiResponse(token, user);
