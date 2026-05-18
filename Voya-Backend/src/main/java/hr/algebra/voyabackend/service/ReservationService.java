@@ -202,7 +202,7 @@ public class ReservationService {
         reservation.setAdditionalNotes(dto.getAdditionalNotes());
         reservation.setStatus(Status.valueOf(dto.getStatus()));
         reservation.setPrice(dto.getPrice());
-        reservation.setIsPaid(dto.getIsPaid());
+        reservation.setIsPaid(dto.getIsPaid() != null ? dto.getIsPaid() : reservation.getIsPaid());
 
         return mapToDto(reservationRepository.save(reservation));
     }
