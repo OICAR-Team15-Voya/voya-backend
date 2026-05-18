@@ -6,6 +6,7 @@ import hr.algebra.voyabackend.model.dto.ReservationDto;
 import hr.algebra.voyabackend.model.dto.ReservationUpdateDto;
 import hr.algebra.voyabackend.model.enums.Status;
 import hr.algebra.voyabackend.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,15 @@ public class ReservationService {
     private final DriverRepository driverRepository;
     private final VehicleRepository vehicleRepository;
     private final VehicleCategoryRepository vehicleCategoryRepository;
+    private final NotificationSenderService notificationSenderService;
 
-    public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository, VehicleCategoryRepository vehicleCategoryRepository) {
+    public ReservationService(ReservationRepository reservationRepository, UserRepository userRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository, VehicleCategoryRepository vehicleCategoryRepository, NotificationSenderService notificationSenderService) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.driverRepository = driverRepository;
         this.vehicleRepository = vehicleRepository;
         this.vehicleCategoryRepository = vehicleCategoryRepository;
+        this.notificationSenderService = notificationSenderService;
     }
 
     /**
@@ -161,7 +164,9 @@ public class ReservationService {
         reservation.setStatus(Status.CONFIRMED);
         reservation.setIsPaid(false);
 
-        return mapToDto(reservationRepository.save(reservation));
+        Reservation newReservation = reservationRepository.save(reservation);
+        notificationSenderService.sendNewReservationEmail(newReservation);
+        return mapToDto(newReservation);
     }
 
     /**
