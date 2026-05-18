@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class Vehicle {
     private Boolean active = true;
 
     @OneToMany(mappedBy = "vehicle")
+    @ToString.Exclude
     private List<Reservation> reservations;
 
 }

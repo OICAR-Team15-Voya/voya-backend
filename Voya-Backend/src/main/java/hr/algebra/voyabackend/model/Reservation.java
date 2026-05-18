@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,10 +22,12 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_category_id", nullable = false)
+    @ToString.Exclude
     private VehicleCategory vehicleCategory;
 
     @Column(nullable = false)
@@ -54,10 +57,12 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "driver_id")
+    @ToString.Exclude
     private Driver driver;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
+    @ToString.Exclude
     private Vehicle vehicle;
 
     @Column(precision = 10, scale = 2)

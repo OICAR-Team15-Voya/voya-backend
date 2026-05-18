@@ -52,6 +52,7 @@ public class User implements UserDetails {
     private Driver driver;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private List<Reservation> reservations;
 
     @Override

@@ -28,5 +28,6 @@ public class Driver {
     private LocalDate licenseValidUntil;
 
     @OneToMany(mappedBy = "driver")
+    @ToString.Exclude
     private List<Reservation> reservations;
 }

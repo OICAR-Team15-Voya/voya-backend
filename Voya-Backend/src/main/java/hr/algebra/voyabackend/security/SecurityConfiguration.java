@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/voya/api/drivers/**").permitAll()
                         .requestMatchers("/voya/api/vehicle-categories/**").permitAll()
                         .requestMatchers("/voya/api/vehicles/**").permitAll()
+                        .requestMatchers("/voya/api/reservations/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

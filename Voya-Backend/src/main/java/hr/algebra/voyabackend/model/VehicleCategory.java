@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -21,8 +22,10 @@ public class VehicleCategory {
     private String name;
 
     @OneToMany(mappedBy = "vehicleCategory")
+    @ToString.Exclude
     private List<Vehicle> vehicles;
 
     @OneToMany(mappedBy = "vehicleCategory")
+    @ToString.Exclude
     private List<Reservation> reservations;
 }
