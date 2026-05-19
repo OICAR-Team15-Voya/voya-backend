@@ -5,6 +5,7 @@ import hr.algebra.voyabackend.model.dto.UserDto;
 import hr.algebra.voyabackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class UserController {
      * @return List<UserDto>
      */
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
@@ -35,6 +37,7 @@ public class UserController {
      * @return UserDto
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
@@ -47,6 +50,7 @@ public class UserController {
      * @return UserDto with updated information
      */
     @PutMapping("/{id}/profile")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<UserDto> updateUserProfile(@PathVariable Integer id, @RequestBody UserDto dto) {
         return ResponseEntity.ok (userService.updateUser(id, dto));
     }
@@ -58,6 +62,7 @@ public class UserController {
      * @return response message whether the user was deleted or not
      */
     @PutMapping("/{id}/password")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<String> updateUserPassword(@PathVariable Integer id, @RequestBody UpdatePasswordDto passwordDto) {
         userService.updatePassword(id, passwordDto);
         return ResponseEntity.ok("Password updated");
@@ -70,6 +75,7 @@ public class UserController {
      * @return response message whether the user was deleted or not
      */
     @PutMapping("/{id}/deactivate")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deactivateUser(@PathVariable Integer id) {
         userService.deactivateUser(id);
         return ResponseEntity.ok("User deactivated");
@@ -82,6 +88,7 @@ public class UserController {
      * @return response message whether the user was deleted or not
      */
     @PutMapping("/{id}/activate")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> activateUser(@PathVariable Integer id) {
         userService.activateUser(id);
         return ResponseEntity.ok("User activated");
@@ -93,6 +100,7 @@ public class UserController {
      * @return response message whether the user was deleted or not
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted");
@@ -104,6 +112,7 @@ public class UserController {
      * @return response message whether the user was deleted or not
      */
     @DeleteMapping("/forget-me/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<String> deleteAndForget(@PathVariable Integer id, @AuthenticationPrincipal UserDetails currentUser) {
 
         userService.deleteAndForget(id, currentUser.getUsername());

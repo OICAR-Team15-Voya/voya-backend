@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("voya/api/vehicles") // please use /voya/api/ convention for all endpoints
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class VehicleController {
 
     private final VehicleService vehicleService;

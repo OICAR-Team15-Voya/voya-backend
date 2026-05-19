@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -55,6 +56,7 @@ public class AuthenticationController {
      * @return AuthApiResponseDto -> JSON with JWT token and user information
      */
     @PostMapping("/adminRegister")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthApiResponseDto> adminRegister(@RequestBody UserRegisterDto dto) {
         AuthApiResponseDto response = userService.registerAsAdmin(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
