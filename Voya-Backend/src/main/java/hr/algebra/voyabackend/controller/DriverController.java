@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/voya/api/drivers") // please use /voya/api/ convention for all endpoints
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class DriverController {
 
     private final DriverService driverService;

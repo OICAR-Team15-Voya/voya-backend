@@ -7,6 +7,7 @@ import hr.algebra.voyabackend.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class ReservationController {
      * @return List<ReservationDto> 200 if OK
      */
     @GetMapping("/all")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReservationDto>> getAllReservations() {
         return ResponseEntity.ok(reservationService.getAll());
     }
@@ -40,7 +41,7 @@ public class ReservationController {
      * @return ReservationDto 200 if OK
      */
     @GetMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReservationDto> getReservationById(@PathVariable Integer id) {
         return ResponseEntity.ok(reservationService.getReservationById(id));
     }
@@ -53,7 +54,7 @@ public class ReservationController {
      * @return List<ReservationDto> 200 if OK
      */
     @GetMapping("/user/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReservationDto>> getReservationsForUser(@PathVariable Integer id) {
         return ResponseEntity.ok(reservationService.getReservationsByUserId(id));
     }
@@ -66,7 +67,7 @@ public class ReservationController {
      * @return List<ReservationDto> 200 if OK
      */
     @GetMapping("/my-reservations")
-    //@PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<List<ReservationDto>> getMyReservations(@AuthenticationPrincipal UserDetails currentUser) {
         return ResponseEntity.ok(reservationService.getReservationsByEmail(currentUser.getUsername()));
     }
@@ -79,7 +80,7 @@ public class ReservationController {
      * @return List<ReservationDto> 200 if OK
      */
     @GetMapping("/my-rides")
-    //@PreAuthorize("hasRole('DRIVER')")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<List<ReservationDto>> getAssignedRidesForDriver(@AuthenticationPrincipal UserDetails currentUser) {
         return ResponseEntity.ok(reservationService.getAssignedRidesForDriver(currentUser.getUsername()));
     }
@@ -92,7 +93,7 @@ public class ReservationController {
      * @return ReservationDto 201 if Created
      */
     @PostMapping
-    //@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(dto));
     }
@@ -106,13 +107,13 @@ public class ReservationController {
      * @return ReservationDto 200 if OK
      */
     @PutMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReservationDto> adminUpdateReservation(@PathVariable Integer id, @RequestBody ReservationUpdateDto dto) {
         return ResponseEntity.ok(reservationService.updateReservation(id, dto));
     }
 
     @PutMapping("/my-reservations/{id}")
-    //@PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<ReservationDto> clientUpdateReservation(@PathVariable Integer id,
                                                                   @RequestBody ReservationCreateDto dto,
                                                                   @AuthenticationPrincipal UserDetails currentUser) {
@@ -127,7 +128,7 @@ public class ReservationController {
      * @return 200 if OK
      */
     @PatchMapping("/set-in-progress/{id}")
-    //@PreAuthorize("hasAnyRole('ADMIN', 'DRIVER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DRIVER')")
     public ResponseEntity<Void> setStatusToInProgress(@PathVariable Integer id) {
         reservationService.setStatusToInProgress(id);
         return ResponseEntity.ok().build();
@@ -141,7 +142,7 @@ public class ReservationController {
      * @return 200 if OK
      */
     @PatchMapping("/set-completed/{id}")
-    //@PreAuthorize("hasAnyRole('ADMIN', 'DRIVER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DRIVER')")
     public ResponseEntity<Void> setStatusToCompleted(@PathVariable Integer id) {
         reservationService.setStatusToCompleted(id);
         return ResponseEntity.ok().build();
@@ -155,7 +156,7 @@ public class ReservationController {
      * @return 200 if OK
      */
     @PatchMapping("/cancel/{id}")
-    //@PreAuthorize("hasRole('CLIENT')")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> cancelReservation(@PathVariable Integer id,
                                                   @AuthenticationPrincipal UserDetails currentUser) {
         reservationService.cancelReservation(id, currentUser.getUsername());
@@ -168,7 +169,7 @@ public class ReservationController {
      * @return 200 if OK
      */
     @DeleteMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteReservation(@PathVariable Integer id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.ok().build();

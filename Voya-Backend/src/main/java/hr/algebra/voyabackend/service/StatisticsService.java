@@ -49,8 +49,10 @@ public class StatisticsService {
                 .filter(Objects::nonNull)         // skip null prices
                 .reduce(BigDecimal.ZERO, BigDecimal::add);  // sum them all
 
+        dto.setTotalRevenue(totalRevenue.toBigInteger().longValue());
+
         // total reservations
-        dto.setTotalReservations((Integer) reservations.size());
+        dto.setTotalReservations(reservations.size());
 
         // reservations by driver
         dto.setDriverReservationCount(
