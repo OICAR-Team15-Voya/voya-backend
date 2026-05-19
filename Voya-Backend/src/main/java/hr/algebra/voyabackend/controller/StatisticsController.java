@@ -27,6 +27,14 @@ public class StatisticsController {
      * Pass 'from' and 'to' for a custom interval.
      * URL: /voya/api/statistics
      */
+
+    //GET /voya/api/statistics → all time
+    //GET /voya/api/statistics?days=7 → last 7 days
+    //GET /voya/api/statistics?days=14 → last 14 days
+    //GET /voya/api/statistics?days=30 → last 30 days
+    //GET /voya/api/statistics?from=2026-01-01T00:00:00&to=2026-03-01T00:00:00 → custom
+
+
     @GetMapping
     public ResponseEntity<StatisticsDto> getStatistics(
             @RequestParam(required = false) Integer days,
