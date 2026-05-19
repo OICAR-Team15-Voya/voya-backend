@@ -119,9 +119,6 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.clientReservationUpdate(id, dto, currentUser.getUsername()));
     }
 
-
-
-
     /**
      * Set reservation status to IN_PROGRESS - ADMIN or DRIVER.
      * Should be accessible only by ADMIN or DRIVER in web app.

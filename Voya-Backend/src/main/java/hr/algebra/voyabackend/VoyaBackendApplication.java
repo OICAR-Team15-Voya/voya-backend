@@ -6,20 +6,22 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class VoyaBackendApplication {
 
-    @Autowired
-    private EmailService emailService;
+//    @Autowired
+//    private EmailService emailService;
 
     public static void main(String[] args) {
         SpringApplication.run(VoyaBackendApplication.class, args);
     }
 
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void sendEmail() {
-        emailService.sendEmail("bruno.bogdan02@gmail.com", "", "This is a test email");
-    }
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void sendEmail() {
+//        emailService.sendEmail("bruno.bogdan02@gmail.com", "VOYA LIVE", "Voya backend is up and running!");
+//    }
 }

@@ -6,7 +6,6 @@ import hr.algebra.voyabackend.model.dto.ReservationDto;
 import hr.algebra.voyabackend.model.dto.ReservationUpdateDto;
 import hr.algebra.voyabackend.model.enums.Status;
 import hr.algebra.voyabackend.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -209,7 +208,10 @@ public class ReservationService {
         reservation.setPrice(dto.getPrice());
         reservation.setIsPaid(dto.getIsPaid() != null ? dto.getIsPaid() : reservation.getIsPaid());
 
-        return mapToDto(reservationRepository.save(reservation));
+        Reservation savedReservation = reservationRepository.save(reservation);
+        notificationSenderService.notifyDriverOfAssignedReservation(savedReservation);
+
+        return mapToDto(savedReservation);
     }
 
     /**
@@ -255,6 +257,7 @@ public class ReservationService {
 
         reservation.setStatus(Status.CANCELLED);
         reservationRepository.save(reservation);
+        notificationSenderService.sendReservationCancelledEmail(reservation);
     }
 
     /**
@@ -262,10 +265,11 @@ public class ReservationService {
      * @param id reservation id
      */
     public void deleteReservation(Integer id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found with id: " + id);
-        }
-        reservationRepository.deleteById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found with id: " + id));
+
+        reservationRepository.deleteById(reservation.getId());
+        notificationSenderService.sendReservationCancelledEmail(reservation);
     }
 
     // MAPPER

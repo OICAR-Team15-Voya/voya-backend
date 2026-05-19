@@ -1,7 +1,6 @@
 package hr.algebra.voyabackend.repository;
 
 import hr.algebra.voyabackend.model.Reservation;
-import io.micrometer.common.KeyValues;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -21,5 +20,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     List<Reservation> findByUserId(Integer userId);
     List<Reservation> findByDriverId(Integer driverId);
     List<Reservation> findByTimeBetween(LocalDateTime from, LocalDateTime to);
-
+    List<Reservation> findByTimeBetweenAndReminderSentFalse(LocalDateTime now, LocalDateTime to);
 }
