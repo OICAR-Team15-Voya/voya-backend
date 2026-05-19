@@ -71,4 +71,7 @@ public class Reservation {
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid = false;
 
+    @Column(name = "reminder_sent")
+    private Boolean reminderSent = false;
+
 }
