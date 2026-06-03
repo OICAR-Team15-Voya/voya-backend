@@ -73,4 +73,16 @@ public class AuthenticationController {
         AuthApiResponseDto response = userService.login(dto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    /**
+     * Client login endpoint.
+     * URL is: /voya/api/auth/client-login
+     * @param dto UserLoginDto (email, password)
+     * @return AuthApiResponseDto -> JSON with JWT token and user information
+     */
+    @PostMapping("/client-login")
+    public ResponseEntity<AuthApiResponseDto> clientLogin(@RequestBody UserLoginDto dto) {
+        AuthApiResponseDto response = userService.loginClient(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
