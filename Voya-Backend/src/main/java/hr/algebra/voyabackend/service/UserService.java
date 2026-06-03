@@ -299,4 +299,17 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public AuthApiResponseDto loginClient(UserLoginDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
+        String token = jwtService.generateToken(user);
+
+        return buildApiResponse(token, user);
+    }
 }
