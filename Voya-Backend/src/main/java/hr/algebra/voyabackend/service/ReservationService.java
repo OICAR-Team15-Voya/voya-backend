@@ -38,7 +38,7 @@ public class ReservationService {
      */
     public List<ReservationDto> getAll() {
         return reservationRepository
-                .findAll()
+                .findAllWithDetails()
                 .stream()
                 .map(this::mapToDto)
                 .toList();
@@ -164,7 +164,12 @@ public class ReservationService {
         reservation.setIsPaid(false);
 
         Reservation newReservation = reservationRepository.save(reservation);
-        notificationSenderService.sendNewReservationEmail(newReservation);
+        try {
+            notificationSenderService.sendNewReservationEmail(newReservation);
+        } catch (Exception e) {
+            // log the error but don't fail the request
+            System.err.println("Failed to send email notification: " + e.getMessage());
+        }
         return mapToDto(newReservation);
     }
 
