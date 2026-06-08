@@ -29,7 +29,7 @@ public class StatisticsService {
 
         // if there is no start time specified, return all reservations
         if (from == null) {
-            reservations = reservationRepository.findAll();
+            reservations = reservationRepository.findAllWithDetails();
         }
         else {
             // if there is no end time specified, set the end time to now
