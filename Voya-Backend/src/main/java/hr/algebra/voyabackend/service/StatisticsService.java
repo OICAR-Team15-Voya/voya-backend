@@ -45,6 +45,7 @@ public class StatisticsService {
         StatisticsDto dto = new StatisticsDto();
 
         BigDecimal totalRevenue = reservations.stream()
+                .filter(r -> Boolean.TRUE.equals(r.getIsPaid()))  // only paid reservations
                 .map(Reservation::getPrice)      // get price from each reservation
                 .filter(Objects::nonNull)         // skip null prices
                 .reduce(BigDecimal.ZERO, BigDecimal::add);  // sum them all
