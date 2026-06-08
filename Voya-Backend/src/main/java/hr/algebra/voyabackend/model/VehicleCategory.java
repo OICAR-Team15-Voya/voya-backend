@@ -1,10 +1,7 @@
 package hr.algebra.voyabackend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -12,10 +9,12 @@ import java.util.List;
 @Table(name = "vehicle_categories")
 @Data
 @AllArgsConstructor @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class VehicleCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 30)

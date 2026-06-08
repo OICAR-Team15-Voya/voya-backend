@@ -1,10 +1,7 @@
 package hr.algebra.voyabackend.model;
 import hr.algebra.voyabackend.model.enums.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,12 +14,14 @@ import java.util.List;
 @Table(name = "users")
 @Data
 @AllArgsConstructor @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 
 // users are stored by ID but email provides  uniqueness
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 150)
